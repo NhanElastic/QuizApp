@@ -1,13 +1,11 @@
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UserEntity } from './user.entity';
+import { Base } from './base.entity';
 
 @Entity({
   name: 'quiz',
 })
-export class QuizEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class QuizEntity extends Base {
   @Column({ length: 100, nullable: false })
   title: string;
 

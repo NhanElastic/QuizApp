@@ -1,25 +1,24 @@
 import {
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   OneToMany,
   OneToOne,
-  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { SubmissionEntity } from './submission.entity';
 import { QuizEntity } from './quiz.entity';
-import { RoleEnum } from '../../app/config/enums/role.enum';
-
+import { RoleEnum } from '../../common/enums/role.enum';
+import { Base } from './base.entity';
+import * as bcrypt from 'bcrypt';
 @Entity({
   name: 'users',
 })
-export class UserEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class UserEntity extends Base {
   @Column({ unique: true, length: 30, nullable: false })
   username: string;
 
-  @Column({ length: 100, nullable: false })
+  @Column({ nullable: false })
   password: string;
 
   @Column({ type: 'enum', enum: RoleEnum, default: RoleEnum.GUEST })
@@ -30,4 +29,19 @@ export class UserEntity {
 
   @OneToOne(() => QuizEntity, (quiz) => quiz.user)
   quiz: QuizEntity;
+
+  @BeforeInsert()
+  async hashPassword(): Promise<void> {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+  }
+
+  async updatePassword(password: string): Promise<void> {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(password, salt);
+  }
+
+  async verifyPassword(password: string): Promise<boolean> {
+    return bcrypt.compare(password, this.password);
+  }
 }

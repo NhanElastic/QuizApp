@@ -3,11 +3,14 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UserController } from './user/user.controller';
-import { QuizController } from './quiz/quiz.controller';
-import { SubmissionController } from './submission/submission.controller';
 
 import databaseConfig from './config/database.config';
+import { UserController } from '../user/user.controller';
+import { QuizController } from '../quiz/quiz.controller';
+import { SubmissionController } from '../submission/submission.controller';
+import { UserModule } from '../user/user.module';
+import { AuthModule } from '../auth/auth.module';
+import { AuthController } from '../auth/auth.controller';
 
 @Module({
   imports: [
@@ -25,12 +28,15 @@ import databaseConfig from './config/database.config';
         return dbConfig;
       },
     }),
+    UserModule,
+    AuthModule,
   ],
   controllers: [
     AppController,
     UserController,
     QuizController,
     SubmissionController,
+    AuthController,
   ],
   providers: [AppService],
 })

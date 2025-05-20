@@ -1,13 +1,11 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UserEntity } from './user.entity';
+import { Base } from './base.entity';
 
 @Entity({
   name: 'submission',
 })
-export class SubmissionEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class SubmissionEntity extends Base {
   @Column('text')
   answer: string;
 
