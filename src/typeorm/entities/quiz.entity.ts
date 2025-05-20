@@ -20,8 +20,8 @@ export class QuizEntity {
   @Column({ type: 'text', nullable: false })
   answer: string;
 
-  @Column({ type: 'float', default: 0 })
-  score: number;
+  @Column({ type: 'int', default: 0 })
+  level: number;
 
   @OneToOne(() => UserEntity, (user) => user.quiz, { onDelete: 'CASCADE' })
   user: UserEntity;
