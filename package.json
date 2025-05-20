@@ -23,7 +23,8 @@
     "database:migration:create": "yarn run typeorm migration:create",
     "database:migration:generate": "yarn run typeorm-datasource migration:generate -p true",
     "database:migration:run": "yarn run typeorm-datasource migration:run",
-    "database:migration:revert": "yarn run typeorm-datasource migration:revert"
+    "database:migration:revert": "yarn run typeorm-datasource migration:revert",
+    "database:seeding": "ts-node ./src/typeorm/seeds/seed.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
