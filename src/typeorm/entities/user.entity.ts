@@ -5,9 +5,9 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { RoleEnum } from '../../common/enums/role.enum';
 import { SubmissionEntity } from './submission.entity';
 import { QuizEntity } from './quiz.entity';
+import { RoleEnum } from '../../app/config/enums/role.enum';
 
 @Entity({
   name: 'users',
