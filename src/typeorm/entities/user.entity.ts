@@ -21,7 +21,7 @@ export class UserEntity extends Base {
   submissions: SubmissionEntity[];
 
   @OneToMany(() => QuizEntity, (quiz) => quiz.user)
-  quiz: QuizEntity;
+  quiz: QuizEntity[];
 
   @BeforeInsert()
   async hashPassword(): Promise<void> {

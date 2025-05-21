@@ -10,7 +10,6 @@ import {
 } from '../dtos/quiz.dto';
 import { plainToInstance } from 'class-transformer';
 import { QuizEntity } from '../typeorm/entities/quiz.entity';
-import { UserEntity } from '../typeorm/entities/user.entity';
 
 @Injectable()
 export class QuizService {
@@ -38,9 +37,9 @@ export class QuizService {
     return plainToInstance(QuizResponseDto, result);
   }
 
-  private checkPermission(
+  checkPermission(
     userDto: CreateUserDtoResponse,
-    quiz: QuizEntity,
+    quiz: QuizEntity | QuizResponseDto,
   ): boolean {
     if (quiz?.user.id !== userDto?.id && userDto?.role === RoleEnum.TEACHER) {
       throw new ForbiddenException(
@@ -88,5 +87,13 @@ export class QuizService {
       throw new HttpException('Quiz not found', 404);
     }
     return plainToInstance(QuizResponseDto, quiz);
+  }
+
+  async getQuizAnswerById(quizId: string) {
+    const quiz = await this.quizRepository.findOneById(quizId, 3);
+    if (!quiz) {
+      throw new HttpException('Quiz not found', 404);
+    }
+    return quiz.answer;
   }
 }

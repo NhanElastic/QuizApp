@@ -4,10 +4,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
 } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { Base } from './base.entity';
+import { SubmissionEntity } from './submission.entity';
 
 @Entity({
   name: 'quiz',
@@ -32,4 +34,7 @@ export class QuizEntity extends Base {
   @ManyToOne(() => UserEntity, (user) => user.quiz, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: UserEntity;
+
+  @OneToMany(() => SubmissionEntity, (submission) => submission.quiz)
+  submissions: SubmissionEntity[];
 }

@@ -12,6 +12,7 @@ import { UserModule } from '../user/user.module';
 import { AuthModule } from '../auth/auth.module';
 import { AuthController } from '../auth/auth.controller';
 import { QuizModule } from '../quiz/quiz.module';
+import { SubmissionModule } from '../submission/submission.module';
 
 @Module({
   imports: [
@@ -32,13 +33,14 @@ import { QuizModule } from '../quiz/quiz.module';
     UserModule,
     AuthModule,
     QuizModule,
+    SubmissionModule,
   ],
   controllers: [
     AppController,
     UserController,
     QuizController,
-    SubmissionController,
     AuthController,
+    SubmissionController,
   ],
   providers: [AppService],
 })
