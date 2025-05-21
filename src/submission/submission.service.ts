@@ -32,6 +32,16 @@ export class SubmissionService {
       quizId,
       score,
     );
-    return plainToInstance(SubmissionResponseDto, submission);
+    return plainToInstance(SubmissionResponseDto, submission, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async getAllSubmissions(userId: string): Promise<SubmissionResponseDto[]> {
+    const submissions =
+      await this.submissionRepository.findAllSubmissions(userId);
+    return plainToInstance(SubmissionResponseDto, submissions, {
+      excludeExtraneousValues: true,
+    });
   }
 }

@@ -6,6 +6,7 @@ import { CreateSubmissionRequestDto } from '../dtos/submission.dto';
 import { UserRepository } from '../user/user.repository';
 import { QuizRepository } from '../quiz/quiz.repository';
 import { getUserLevel } from '../common/funtions';
+import { RoleEnum } from '../common/enums/role.enum';
 
 @Injectable()
 export class SubmissionRepository {
@@ -54,5 +55,38 @@ export class SubmissionRepository {
 
   async save(submission: SubmissionEntity): Promise<SubmissionEntity> {
     return await this.submissionRepository.save(submission);
+  }
+
+  async findAllSubmissions(userId: string): Promise<SubmissionEntity[]> {
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    if (user.role == RoleEnum.STUDENT) {
+      const data = await this.submissionRepository.find({
+        where: { user: { id: userId } },
+        relations: ['quiz', 'user'],
+        order: {
+          createdAt: 'DESC',
+        },
+      });
+      console.log(data);
+      return data;
+    } else if (user.role == RoleEnum.TEACHER) {
+      return await this.submissionRepository.find({
+        where: { quiz: { user: { id: userId } } },
+        relations: ['quiz', 'user'],
+        order: {
+          createdAt: 'DESC',
+        },
+      });
+    }
+    return await this.submissionRepository.find({
+      relations: ['quiz', 'user'],
+      order: {
+        createdAt: 'DESC',
+      },
+    });
   }
 }

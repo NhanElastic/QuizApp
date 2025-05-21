@@ -1,4 +1,12 @@
-import { Body, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '../guard/guard.service';
 import { RoleEnum } from '../common/enums/role.enum';
 import { CreateUserDtoResponse } from '../dtos/user.dto';
@@ -22,5 +30,12 @@ export class SubmissionController {
       userData.id,
       quizId,
     );
+  }
+
+  @UseGuards(AuthGuard(RoleEnum.STUDENT, RoleEnum.TEACHER, RoleEnum.ADMIN))
+  @Get()
+  async getAllSubmissions(@Req() request: Request): Promise<any> {
+    const userData: CreateUserDtoResponse = request['user'];
+    return await this.submissionService.getAllSubmissions(userData.id);
   }
 }

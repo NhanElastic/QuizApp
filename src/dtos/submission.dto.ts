@@ -1,9 +1,10 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
 import { QuizEntity } from '../typeorm/entities/quiz.entity';
 import { UserEntity } from '../typeorm/entities/user.entity';
 
 abstract class SubmissionDto {
+  @Expose()
   @IsString()
   @IsNotEmpty()
   answer: string;
@@ -12,25 +13,24 @@ abstract class SubmissionDto {
 export class CreateSubmissionRequestDto extends SubmissionDto {}
 
 export class SubmissionResponseDto extends SubmissionDto {
+  @Expose()
   @IsString()
   @IsNotEmpty()
   id: string;
 
+  @Expose()
   @IsString()
   @IsNotEmpty()
-  quizId: QuizEntity['id'];
+  @Transform(({ obj }) => obj.quiz?.id)
+  quizId: string;
 
-  @IsString()
+  @Expose()
   @IsNotEmpty()
-  userId: UserEntity['id'];
+  @Transform(({ obj }) => obj.user?.id)
+  userId: string;
 
+  @Expose()
   @IsNumber()
   @IsNotEmpty()
   score: number;
-
-  @Exclude()
-  quiz: QuizEntity;
-
-  @Exclude()
-  user: UserEntity;
 }
