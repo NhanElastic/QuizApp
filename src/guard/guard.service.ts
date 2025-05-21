@@ -10,13 +10,14 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { UserRepository } from '../user/user.repository';
 import { RoleEnum } from '../common/enums/role.enum';
+import { UserService } from '../user/user.service';
 
 export function AuthGuard(...roles: RoleEnum[]): Type<CanActivate> {
   @Injectable()
   class AuthGuardMixin implements CanActivate {
     constructor(
       private readonly jwtService: JwtService,
-      private readonly UserRepository: UserRepository,
+      private readonly UserService: UserService,
     ) {}
 
     private extractTokenFromHeader(request: Request): string | undefined {
@@ -35,7 +36,7 @@ export function AuthGuard(...roles: RoleEnum[]): Type<CanActivate> {
       try {
         const payload: { sub: string } =
           await this.jwtService.verifyAsync(token);
-        const user = await this.UserRepository.findOneById(payload.sub);
+        const user = await this.UserService.findOneById(payload.sub);
 
         if (!user) {
           throw new UnauthorizedException();

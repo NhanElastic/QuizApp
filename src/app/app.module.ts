@@ -11,6 +11,7 @@ import { SubmissionController } from '../submission/submission.controller';
 import { UserModule } from '../user/user.module';
 import { AuthModule } from '../auth/auth.module';
 import { AuthController } from '../auth/auth.controller';
+import { QuizModule } from '../quiz/quiz.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { AuthController } from '../auth/auth.controller';
     }),
     UserModule,
     AuthModule,
+    QuizModule,
   ],
   controllers: [
     AppController,

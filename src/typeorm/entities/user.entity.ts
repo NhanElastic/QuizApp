@@ -1,11 +1,4 @@
-import {
-  BeforeInsert,
-  BeforeUpdate,
-  Column,
-  Entity,
-  OneToMany,
-  OneToOne,
-} from 'typeorm';
+import { BeforeInsert, Column, Entity, OneToMany, OneToOne } from 'typeorm';
 import { SubmissionEntity } from './submission.entity';
 import { QuizEntity } from './quiz.entity';
 import { RoleEnum } from '../../common/enums/role.enum';
@@ -27,7 +20,7 @@ export class UserEntity extends Base {
   @OneToMany(() => SubmissionEntity, (submission) => submission.user)
   submissions: SubmissionEntity[];
 
-  @OneToOne(() => QuizEntity, (quiz) => quiz.user)
+  @OneToMany(() => QuizEntity, (quiz) => quiz.user)
   quiz: QuizEntity;
 
   @BeforeInsert()

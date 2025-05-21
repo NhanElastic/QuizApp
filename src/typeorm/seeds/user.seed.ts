@@ -9,7 +9,6 @@ export default class UserSeed extends BaseSeed {
   }
 
   public async run(): Promise<void> {
-    // Kiểm tra admin
     const adminUser = await this.repo.findOneBy({ username: 'admin' });
     if (!adminUser) {
       const admin = this.repo.create({
@@ -23,7 +22,6 @@ export default class UserSeed extends BaseSeed {
       console.log('Admin user already exists');
     }
 
-    // Kiểm tra guest
     const guestUser = await this.repo.findOneBy({ username: 'guest' });
     if (!guestUser) {
       const guest = this.repo.create({
