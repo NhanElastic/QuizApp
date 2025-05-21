@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import {
   ChangePasswordDto,
   CreateUserDtoRequest,
@@ -18,7 +18,7 @@ export class UserService {
       userData.username,
     );
     if (existingUser) {
-      throw new Error('User already exists');
+      throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
     const newUser = this.userRepository.create(userData);
     return plainToInstance(CreateUserDtoResponse, newUser);
@@ -29,10 +29,13 @@ export class UserService {
   ): Promise<void> {
     const user = await this.userRepository.findOneById(changePasswordData.id);
     if (!user) {
-      throw new Error('User not found');
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
     if (!changePasswordData.password)
-      throw new Error('New password is required');
+      throw new HttpException(
+        'New password is required',
+        HttpStatus.BAD_REQUEST,
+      );
 
     await user.updatePassword(changePasswordData.password);
     await this.userRepository.save(user);
@@ -41,15 +44,7 @@ export class UserService {
   async findOneById(id: string): Promise<CreateUserDtoResponse> {
     const user = await this.userRepository.findOneById(id);
     if (!user) {
-      throw new Error('User not found');
-    }
-    return plainToInstance(CreateUserDtoResponse, user);
-  }
-
-  async findOneByUsername(username: string): Promise<CreateUserDtoResponse> {
-    const user = await this.userRepository.findOneByUsername(username);
-    if (!user) {
-      throw new Error('User not found');
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
     return plainToInstance(CreateUserDtoResponse, user);
   }
