@@ -62,8 +62,7 @@ Additionally, you can run the following commands to revert the database or seed 
 # Revert database
 $ yarn run database:migration:revert
 
-# Watch out: You must run only one of the following commands.
-# Avoid duplicate data in the database.
+# Use this to create dummy data
 $ yarn database:seeding
 
 ```
