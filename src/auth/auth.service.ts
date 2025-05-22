@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from '../user/user.repository';
 import { SignInRequestDto, SignInResponseDto } from '../dtos/signin.dto';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 import {
   RefreshTokenRequestDto,
   RefreshTokenResponseDto,
@@ -10,26 +10,36 @@ import {
 @Injectable()
 export class AuthService {
   constructor(
-    private userService: UserRepository,
+    private userRepository: UserRepository,
     private jwtService: JwtService,
   ) {}
 
   async refreshToken(
     refreshToken: RefreshTokenRequestDto,
   ): Promise<RefreshTokenResponseDto> {
-    const payload: { sub: string } = await this.jwtService.verifyAsync(
-      refreshToken.refreshToken,
-    );
-    const user = await this.userService.findOneById(payload.sub);
-    if (!user) {
-      throw new UnauthorizedException();
+    try {
+      const payload: { sub: string } = await this.jwtService.verifyAsync(
+        refreshToken.refreshToken,
+      );
+
+      const user = await this.userRepository.findOneById(payload.sub);
+      if (!user) {
+        throw new UnauthorizedException();
+      }
+      const newPayload = { sub: user.id };
+      return {
+        accessToken: await this.jwtService.signAsync(newPayload, {
+          expiresIn: '15m',
+        }),
+      };
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      } else if (error instanceof TokenExpiredError) {
+        throw new UnauthorizedException('Token expired');
+      }
+      throw new UnauthorizedException('Invalid token');
     }
-    const newPayload = { sub: user.id };
-    return {
-      accessToken: await this.jwtService.signAsync(newPayload, {
-        expiresIn: '15m',
-      }),
-    };
   }
 
   async createTokens(payload: { sub: string }): Promise<SignInResponseDto> {
@@ -45,7 +55,7 @@ export class AuthService {
     };
   }
   async signIn(data: SignInRequestDto): Promise<SignInResponseDto> {
-    const user = await this.userService.findOneByUsername(data.username);
+    const user = await this.userRepository.findOneByUsername(data.username);
     if (!user) {
       throw new UnauthorizedException();
     }
