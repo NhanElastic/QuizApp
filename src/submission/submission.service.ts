@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { SubmissionRepository } from './submisstion.repository';
 import {
   CreateSubmissionRequestDto,
@@ -19,15 +19,11 @@ export class SubmissionService {
     quizId: string,
     answer: string,
   ): Promise<number> {
-    try {
-      const correctAnswer = await this.quizService.getQuizAnswerById(
-        quizId,
-        RoleEnum.ADMIN,
-      );
-      return correctAnswer == answer ? 10 : 0;
-    } catch {
-      throw new HttpException('Quiz not found', 404);
-    }
+    const correctAnswer = await this.quizService.getQuizAnswerById(
+      quizId,
+      RoleEnum.ADMIN,
+    );
+    return correctAnswer === answer ? 10 : 0;
   }
 
   async submitQuiz(

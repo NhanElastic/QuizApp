@@ -132,9 +132,9 @@ describe('QuizRepository', () => {
       const quiz = { ...mockQuizEntity };
       const newData: UpdateQuizRequestDto = {
         title: 'New Title',
-        description: null,
+        description: undefined,
         question: 'New Q',
-        answer: null,
+        answer: undefined,
         level: 2,
       };
       quizRepoMock.save.mockResolvedValue({ ...quiz, ...newData } as any);
@@ -149,11 +149,11 @@ describe('QuizRepository', () => {
     it('should not update any fields if newData is all undefined', async () => {
       const quiz = { ...mockQuizEntity };
       const newData: UpdateQuizRequestDto = {
-        title: null,
-        description: null,
-        question: null,
-        answer: null,
-        level: null,
+        title: undefined,
+        description: undefined,
+        question: undefined,
+        answer: undefined,
+        level: undefined,
       };
       quizRepoMock.save.mockResolvedValue(quiz as any);
 

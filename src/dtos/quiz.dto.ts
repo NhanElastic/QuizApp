@@ -1,61 +1,67 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { UserEntity } from '../typeorm/entities/user.entity';
 
 abstract class QuizDto {
+  @Expose()
   @IsString()
   @IsNotEmpty()
-  title: string;
+  title!: string;
 
+  @Expose()
   @IsString()
   @IsNotEmpty()
-  description: string;
+  description!: string;
 
+  @Expose()
   @IsNumber()
   @IsNotEmpty()
-  level: number;
+  level!: number;
 
+  @Expose()
   @IsString()
   @IsNotEmpty()
-  question: string;
+  question!: string;
 }
 
 export class CreateQuizRequestDto extends QuizDto {
+  @Expose()
   @IsString()
   @IsNotEmpty()
-  answer: string;
+  answer!: string;
 }
 
 export class QuizResponseDto extends QuizDto {
+  @Expose()
   @IsString()
   @IsNotEmpty()
-  id: string;
+  id!: string;
 
   @Exclude()
-  answer: string;
+  answer!: string;
 
   @Exclude()
-  user: UserEntity;
+  user!: UserEntity;
 }
 
 export class UpdateQuizRequestDto {
   @IsOptional()
   @IsString()
-  title: string | null = null;
+  title?: string;
 
   @IsOptional()
   @IsString()
-  description: string | null = null;
+  description?: string;
 
   @IsOptional()
   @IsString()
-  question: string | null = null;
+  question?: string;
 
   @IsOptional()
   @IsString()
-  answer: string | null = null;
+  answer?: string;
 
   @IsOptional()
   @IsNumber()
-  level: number | null = null;
+  level?: number;
 }
