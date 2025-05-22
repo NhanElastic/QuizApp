@@ -1,7 +1,5 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Exclude, Expose, Transform } from 'class-transformer';
-import { QuizEntity } from '../typeorm/entities/quiz.entity';
-import { UserEntity } from '../typeorm/entities/user.entity';
 
 abstract class SubmissionDto {
   @Expose()

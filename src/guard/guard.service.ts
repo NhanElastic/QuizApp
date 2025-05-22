@@ -6,7 +6,7 @@ import {
   Type,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { Request } from 'express';
 import { UserRepository } from '../user/user.repository';
 import { RoleEnum } from '../common/enums/role.enum';
@@ -53,6 +53,9 @@ export function AuthGuard(...roles: RoleEnum[]): Type<CanActivate> {
         throw new UnauthorizedException('You does not have permission');
       } catch (error) {
         Logger.error('Error in AuthGuard:', error);
+        if (error instanceof TokenExpiredError) {
+          throw new UnauthorizedException('Token expired');
+        }
         throw new UnauthorizedException(error);
       }
     }

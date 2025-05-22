@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { SubmissionRepository } from './submisstion.repository';
 import {
   CreateSubmissionRequestDto,
@@ -6,7 +6,7 @@ import {
 } from '../dtos/submission.dto';
 import { plainToInstance } from 'class-transformer';
 import { QuizService } from '../quiz/quiz.service';
-import { UserService } from '../user/user.service';
+import { RoleEnum } from '../common/enums/role.enum';
 
 @Injectable()
 export class SubmissionService {
@@ -15,16 +15,26 @@ export class SubmissionService {
     private readonly quizService: QuizService,
   ) {}
 
-  async calculateScore(quizId: string, answer: string): Promise<number> {
-    const correctAnswer = await this.quizService.getQuizAnswerById(quizId);
-    return correctAnswer == answer ? 10 : 0;
+  private async calculateScore(
+    quizId: string,
+    answer: string,
+  ): Promise<number> {
+    try {
+      const correctAnswer = await this.quizService.getQuizAnswerById(
+        quizId,
+        RoleEnum.ADMIN,
+      );
+      return correctAnswer == answer ? 10 : 0;
+    } catch {
+      throw new HttpException('Quiz not found', 404);
+    }
   }
 
   async submitQuiz(
     submissionData: CreateSubmissionRequestDto,
     userId: string,
     quizId: string,
-  ): Promise<any> {
+  ): Promise<SubmissionResponseDto> {
     const score = await this.calculateScore(quizId, submissionData.answer);
     const submission = await this.submissionRepository.create(
       submissionData,

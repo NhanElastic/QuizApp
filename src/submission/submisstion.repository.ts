@@ -25,11 +25,11 @@ export class SubmissionRepository {
   ): Promise<SubmissionEntity> {
     const user = await this.userRepository.findOneById(userId);
     if (!user) {
-      throw new Error('User not found');
+      throw new HttpException('User not found', 404);
     }
     const quiz = await this.quizRepository.findOneById(quizId, 3);
     if (!quiz) {
-      throw new Error('Quiz not found');
+      throw new HttpException('Quiz not found', 404);
     }
     const userLevel = getUserLevel(user.role);
     if (userLevel < quiz.level) {
@@ -48,45 +48,40 @@ export class SubmissionRepository {
   }
 
   async findOneById(id: string): Promise<SubmissionEntity | null> {
-    return await this.submissionRepository.findOne({
+    return this.submissionRepository.findOne({
       where: { id },
     });
   }
 
   async save(submission: SubmissionEntity): Promise<SubmissionEntity> {
-    return await this.submissionRepository.save(submission);
+    return this.submissionRepository.save(submission);
   }
 
   async findAllSubmissions(userId: string): Promise<SubmissionEntity[]> {
     const user = await this.userRepository.findOneById(userId);
     if (!user) {
-      throw new Error('User not found');
+      throw new HttpException('User not found', 404);
     }
 
-    if (user.role == RoleEnum.STUDENT) {
-      const data = await this.submissionRepository.find({
+    if (user.role === RoleEnum.STUDENT) {
+      return this.submissionRepository.find({
         where: { user: { id: userId } },
         relations: ['quiz', 'user'],
-        order: {
-          createdAt: 'DESC',
-        },
-      });
-      console.log(data);
-      return data;
-    } else if (user.role == RoleEnum.TEACHER) {
-      return await this.submissionRepository.find({
-        where: { quiz: { user: { id: userId } } },
-        relations: ['quiz', 'user'],
-        order: {
-          createdAt: 'DESC',
-        },
+        order: { createdAt: 'DESC' },
       });
     }
-    return await this.submissionRepository.find({
+
+    if (user.role === RoleEnum.TEACHER) {
+      return this.submissionRepository.find({
+        where: { quiz: { user: { id: userId } } },
+        relations: ['quiz', 'user'],
+        order: { createdAt: 'DESC' },
+      });
+    }
+
+    return this.submissionRepository.find({
       relations: ['quiz', 'user'],
-      order: {
-        createdAt: 'DESC',
-      },
+      order: { createdAt: 'DESC' },
     });
   }
 }
