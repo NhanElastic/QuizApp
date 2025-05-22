@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
-import { Exclude, Expose, Transform } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 
 abstract class SubmissionDto {
   @Expose()
@@ -19,12 +19,13 @@ export class SubmissionResponseDto extends SubmissionDto {
   @Expose()
   @IsString()
   @IsNotEmpty()
-  @Transform(({ obj }) => obj.quiz?.id)
+  @Transform(({ obj }: { obj: any }): string | undefined => obj.quiz?.id)
   quizId: string;
 
   @Expose()
+  @IsString()
   @IsNotEmpty()
-  @Transform(({ obj }) => obj.user?.id)
+  @Transform(({ obj }: { obj: any }): string | undefined => obj.user?.id)
   userId: string;
 
   @Expose()

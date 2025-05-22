@@ -10,7 +10,7 @@ import {
 } from '../dtos/quiz.dto';
 import { plainToInstance } from 'class-transformer';
 import { QuizEntity } from '../typeorm/entities/quiz.entity';
-import { getUserLevel } from '../common/funtions';
+import { getUserLevel } from '../common/functions';
 
 @Injectable()
 export class QuizService {

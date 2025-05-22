@@ -1,7 +1,7 @@
 import { QuizService } from '../quiz.service';
 import { ForbiddenException, HttpException } from '@nestjs/common';
 import { RoleEnum } from '../../common/enums/role.enum';
-import { getUserLevel } from '../../common/funtions';
+import { getUserLevel } from '../../common/functions';
 
 const mockQuizRepository = {
   findAllQuiz: jest.fn(),

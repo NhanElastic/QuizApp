@@ -7,6 +7,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { AuthGuard } from '../guard/guard.service';
 import { RoleEnum } from '../common/enums/role.enum';
 import { CreateUserDtoResponse } from '../dtos/user.dto';
@@ -19,13 +20,13 @@ export class SubmissionController {
 
   @UseGuards(AuthGuard(RoleEnum.STUDENT))
   @Post(':quizId')
-  async submitQuiz(
+  submitQuiz(
     @Param('quizId') quizId: string,
     @Body() submissionData: CreateSubmissionRequestDto,
     @Req() request: Request,
   ): Promise<any> {
-    const userData: CreateUserDtoResponse = request['user'];
-    return await this.submissionService.submitQuiz(
+    const userData = request['user'] as CreateUserDtoResponse;
+    return this.submissionService.submitQuiz(
       submissionData,
       userData.id,
       quizId,
@@ -34,8 +35,8 @@ export class SubmissionController {
 
   @UseGuards(AuthGuard(RoleEnum.STUDENT, RoleEnum.TEACHER, RoleEnum.ADMIN))
   @Get()
-  async getAllSubmissions(@Req() request: Request): Promise<any> {
-    const userData: CreateUserDtoResponse = request['user'];
-    return await this.submissionService.getAllSubmissions(userData.id);
+  getAllSubmissions(@Req() request: Request): Promise<any> {
+    const userData = request['user'] as CreateUserDtoResponse;
+    return this.submissionService.getAllSubmissions(userData.id);
   }
 }
