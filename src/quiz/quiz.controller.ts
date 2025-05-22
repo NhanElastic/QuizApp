@@ -7,7 +7,9 @@ import {
   Patch,
   Post,
   Req,
+  UseFilters,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { QuizService } from './quiz.service';
 import { Request } from 'express';
@@ -19,7 +21,13 @@ import {
   QuizResponseDto,
   UpdateQuizRequestDto,
 } from '../dtos/quiz.dto';
+import { TransformInterceptor } from '../common/interceptors/transform.interceptor';
+import { LoggingInterceptor } from '../common/interceptors/logging.interceptor';
+import { HttpExceptionFilter } from '../common/filters/http-exception.filter';
 
+@UseInterceptors(TransformInterceptor)
+@UseInterceptors(LoggingInterceptor)
+@UseFilters(HttpExceptionFilter)
 @Controller('quiz')
 export class QuizController {
   constructor(private readonly quizService: QuizService) {}

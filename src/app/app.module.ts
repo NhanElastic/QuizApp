@@ -13,6 +13,9 @@ import { AuthModule } from '../auth/auth.module';
 import { AuthController } from '../auth/auth.controller';
 import { QuizModule } from '../quiz/quiz.module';
 import { SubmissionModule } from '../submission/submission.module';
+import { TransformInterceptor } from '../common/interceptors/transform.interceptor';
+import { LoggingInterceptor } from '../common/interceptors/logging.interceptor';
+import { HttpExceptionFilter } from '../common/filters/http-exception.filter';
 
 @Module({
   imports: [
@@ -42,6 +45,11 @@ import { SubmissionModule } from '../submission/submission.module';
     AuthController,
     SubmissionController,
   ],
-  providers: [AppService],
+  providers: [
+    AppService,
+    TransformInterceptor,
+    LoggingInterceptor,
+    HttpExceptionFilter,
+  ],
 })
 export class AppModule {}

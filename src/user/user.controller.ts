@@ -1,4 +1,12 @@
-import { Body, Controller, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Patch,
+  Post,
+  UseFilters,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import {
   ChangePasswordDto,
@@ -7,17 +15,23 @@ import {
 } from '../dtos/user.dto';
 import { AuthGuard } from '../guard/guard.service';
 import { RoleEnum } from '../common/enums/role.enum';
+import { TransformInterceptor } from '../common/interceptors/transform.interceptor';
+import { LoggingInterceptor } from '../common/interceptors/logging.interceptor';
+import { HttpExceptionFilter } from '../common/filters/http-exception.filter';
 
+@UseInterceptors(TransformInterceptor)
+@UseInterceptors(LoggingInterceptor)
+@UseFilters(HttpExceptionFilter)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @UseGuards(AuthGuard(RoleEnum.ADMIN))
   @Post()
-  async createUser(
+  createUser(
     @Body() userData: CreateUserDtoRequest,
   ): Promise<CreateUserDtoResponse> {
-    return await this.userService.createUser(userData);
+    return this.userService.createUser(userData);
   }
 
   @UseGuards(AuthGuard(RoleEnum.ADMIN))
