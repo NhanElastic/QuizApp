@@ -46,11 +46,13 @@ describe('QuizRepository', () => {
     quizRepository = new QuizRepository(quizRepoMock, userRepoMock);
   });
 
-  it('save should call quizRepository.save', async () => {
-    quizRepoMock.save.mockResolvedValue(mockQuizEntity as any);
-    const result = await quizRepository.save(mockQuizEntity as any);
-    expect(quizRepoMock.save).toHaveBeenCalledWith(mockQuizEntity);
-    expect(result).toBe(mockQuizEntity);
+  describe('save', () => {
+    it('should call quizRepository.save', async () => {
+      quizRepoMock.save.mockResolvedValue(mockQuizEntity as any);
+      const result = await quizRepository.save(mockQuizEntity as any);
+      expect(quizRepoMock.save).toHaveBeenCalledWith(mockQuizEntity);
+      expect(result).toBe(mockQuizEntity);
+    });
   });
 
   describe('create', () => {
@@ -83,75 +85,85 @@ describe('QuizRepository', () => {
     });
   });
 
-  it('findOneById should call findOne with correct params', async () => {
-    quizRepoMock.findOne.mockResolvedValue(mockQuizEntity as any);
-    const result = await quizRepository.findOneById('1', 2);
-    expect(quizRepoMock.findOne).toHaveBeenCalledWith({
-      where: { id: '1', level: expect.anything() },
-      relations: ['user'],
+  describe('findOneById', () => {
+    it('should call findOne with correct params', async () => {
+      quizRepoMock.findOne.mockResolvedValue(mockQuizEntity as any);
+      const result = await quizRepository.findOneById('1', 2);
+      expect(quizRepoMock.findOne).toHaveBeenCalledWith({
+        where: { id: '1', level: expect.anything() },
+        relations: ['user'],
+      });
+      expect(result).toBe(mockQuizEntity);
     });
-    expect(result).toBe(mockQuizEntity);
   });
 
-  it('findOneByTitle should call findOne with correct params', async () => {
-    quizRepoMock.findOne.mockResolvedValue(mockQuizEntity as any);
-    const result = await quizRepository.findOneByTitle('Quiz', 2);
-    expect(quizRepoMock.findOne).toHaveBeenCalledWith({
-      where: { title: 'Quiz', level: expect.anything() },
+  describe('findOneByTitle', () => {
+    it('should call findOne with correct params', async () => {
+      quizRepoMock.findOne.mockResolvedValue(mockQuizEntity as any);
+      const result = await quizRepository.findOneByTitle('Quiz', 2);
+      expect(quizRepoMock.findOne).toHaveBeenCalledWith({
+        where: { title: 'Quiz', level: expect.anything() },
+      });
+      expect(result).toBe(mockQuizEntity);
     });
-    expect(result).toBe(mockQuizEntity);
   });
 
-  it('findAllQuiz should call findBy with correct params', async () => {
-    quizRepoMock.findBy.mockResolvedValue([mockQuizEntity] as any);
-    const result = await quizRepository.findAllQuiz(2);
-    expect(quizRepoMock.findBy).toHaveBeenCalledWith({
-      level: expect.anything(),
+  describe('findAllQuiz', () => {
+    it('should call findBy with correct params', async () => {
+      quizRepoMock.findBy.mockResolvedValue([mockQuizEntity] as any);
+      const result = await quizRepository.findAllQuiz(2);
+      expect(quizRepoMock.findBy).toHaveBeenCalledWith({
+        level: expect.anything(),
+      });
+      expect(result).toEqual([mockQuizEntity]);
     });
-    expect(result).toEqual([mockQuizEntity]);
   });
 
-  it('deleteQuiz should call remove', async () => {
-    quizRepoMock.remove.mockResolvedValue(mockQuizEntity as any);
-    await quizRepository.deleteQuiz(mockQuizEntity as any);
-    expect(quizRepoMock.remove).toHaveBeenCalledWith(mockQuizEntity);
+  describe('deleteQuiz', () => {
+    it('should call remove', async () => {
+      quizRepoMock.remove.mockResolvedValue(mockQuizEntity as any);
+      await quizRepository.deleteQuiz(mockQuizEntity as any);
+      expect(quizRepoMock.remove).toHaveBeenCalledWith(mockQuizEntity);
+    });
   });
 
-  it('updateQuiz should update fields and save', async () => {
-    const quiz = { ...mockQuizEntity };
-    const newData: UpdateQuizRequestDto = {
-      title: 'New Title',
-      description: null,
-      question: 'New Q',
-      answer: null,
-      level: 2,
-    };
-    quizRepoMock.save.mockResolvedValue({ ...quiz, ...newData } as any);
+  describe('updateQuiz', () => {
+    it('should update fields and save', async () => {
+      const quiz = { ...mockQuizEntity };
+      const newData: UpdateQuizRequestDto = {
+        title: 'New Title',
+        description: null,
+        question: 'New Q',
+        answer: null,
+        level: 2,
+      };
+      quizRepoMock.save.mockResolvedValue({ ...quiz, ...newData } as any);
 
-    const result = await quizRepository.updateQuiz(quiz as any, newData);
-    expect(result.title).toBe('New Title');
-    expect(result.question).toBe('New Q');
-    expect(result.level).toBe(2);
-    expect(quizRepoMock.save).toHaveBeenCalled();
-  });
+      const result = await quizRepository.updateQuiz(quiz as any, newData);
+      expect(result.title).toBe('New Title');
+      expect(result.question).toBe('New Q');
+      expect(result.level).toBe(2);
+      expect(quizRepoMock.save).toHaveBeenCalled();
+    });
 
-  it('updateQuiz should not update any fields if newData is all undefined', async () => {
-    const quiz = { ...mockQuizEntity };
-    const newData: UpdateQuizRequestDto = {
-      title: null,
-      description: null,
-      question: null,
-      answer: null,
-      level: null,
-    };
-    quizRepoMock.save.mockResolvedValue(quiz as any);
+    it('should not update any fields if newData is all undefined', async () => {
+      const quiz = { ...mockQuizEntity };
+      const newData: UpdateQuizRequestDto = {
+        title: null,
+        description: null,
+        question: null,
+        answer: null,
+        level: null,
+      };
+      quizRepoMock.save.mockResolvedValue(quiz as any);
 
-    const result = await quizRepository.updateQuiz(quiz as any, newData);
-    expect(result.title).toBe(mockQuizEntity.title);
-    expect(result.description).toBe(mockQuizEntity.description);
-    expect(result.question).toBe(mockQuizEntity.question);
-    expect(result.answer).toBe(mockQuizEntity.answer);
-    expect(result.level).toBe(mockQuizEntity.level);
-    expect(quizRepoMock.save).toHaveBeenCalled();
+      const result = await quizRepository.updateQuiz(quiz as any, newData);
+      expect(result.title).toBe(mockQuizEntity.title);
+      expect(result.description).toBe(mockQuizEntity.description);
+      expect(result.question).toBe(mockQuizEntity.question);
+      expect(result.answer).toBe(mockQuizEntity.answer);
+      expect(result.level).toBe(mockQuizEntity.level);
+      expect(quizRepoMock.save).toHaveBeenCalled();
+    });
   });
 });

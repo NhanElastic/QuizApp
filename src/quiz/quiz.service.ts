@@ -10,6 +10,7 @@ import {
 } from '../dtos/quiz.dto';
 import { plainToInstance } from 'class-transformer';
 import { QuizEntity } from '../typeorm/entities/quiz.entity';
+import { getUserLevel } from '../common/funtions';
 
 @Injectable()
 export class QuizService {
@@ -18,13 +19,12 @@ export class QuizService {
     private readonly userService: UserService,
   ) {}
 
-  private getUserLevelByRole(user: CreateUserDtoResponse): number {
-    return user.role === RoleEnum.GUEST ? 2 : 3;
-  }
-
   async getAllQuizzes(userid: string): Promise<QuizResponseDto[]> {
     const user = await this.userService.findOneById(userid);
-    const userLevel = this.getUserLevelByRole(user);
+    if (!user) {
+      throw new HttpException('User not found', 404);
+    }
+    const userLevel = getUserLevel(user.role);
     const quizzes = await this.quizRepository.findAllQuiz(userLevel);
     return plainToInstance(QuizResponseDto, quizzes);
   }
@@ -33,34 +33,36 @@ export class QuizService {
     quizData: CreateQuizRequestDto,
     userid: string,
   ): Promise<QuizResponseDto> {
+    const user = await this.userService.findOneById(userid);
+    if (!user) {
+      throw new HttpException('User not found', 404);
+    }
     const result = await this.quizRepository.create(quizData, userid);
     return plainToInstance(QuizResponseDto, result);
   }
 
-  checkPermission(
+  private checkPermission(
     userDto: CreateUserDtoResponse,
     quiz: QuizEntity | QuizResponseDto,
-  ): boolean {
+  ): void {
     if (quiz?.user.id !== userDto?.id && userDto?.role === RoleEnum.TEACHER) {
       throw new ForbiddenException(
-        "You don't have permission to delete this quiz",
+        "You don't have permission to perform this action on this quiz",
       );
     }
-    return true;
   }
 
   async deleteQuiz(
     userDto: CreateUserDtoResponse,
     quizId: string,
   ): Promise<void> {
-    const quiz = await this.quizRepository.findOneById(quizId, 3);
+    const userLevel = getUserLevel(userDto.role);
+    const quiz = await this.quizRepository.findOneById(quizId, userLevel);
     if (!quiz) {
       throw new HttpException('Quiz not found', 404);
     }
-    const permission = this.checkPermission(userDto, quiz);
-    if (permission) {
-      return await this.quizRepository.deleteQuiz(quiz);
-    }
+    this.checkPermission(userDto, quiz);
+    await this.quizRepository.deleteQuiz(quiz);
   }
 
   async updateQuiz(
@@ -68,20 +70,22 @@ export class QuizService {
     quizId: string,
     quizData: UpdateQuizRequestDto,
   ): Promise<string | undefined> {
-    const quiz = await this.quizRepository.findOneById(quizId, 3);
+    const userLevel = getUserLevel(userDto.role);
+    const quiz = await this.quizRepository.findOneById(quizId, userLevel);
     if (!quiz) {
       throw new HttpException('Quiz not found', 404);
     }
-    const permission = this.checkPermission(userDto, quiz);
-    if (permission) {
-      const quizUpdated = await this.quizRepository.updateQuiz(quiz, quizData);
-      return quizUpdated.id;
-    }
+    this.checkPermission(userDto, quiz);
+    const quizUpdated = await this.quizRepository.updateQuiz(quiz, quizData);
+    return quizUpdated.id;
   }
 
   async getQuizById(quizId: string, userid: string): Promise<QuizResponseDto> {
     const user = await this.userService.findOneById(userid);
-    const userLevel = this.getUserLevelByRole(user);
+    if (!user) {
+      throw new HttpException('User not found', 404);
+    }
+    const userLevel = getUserLevel(user.role);
     const quiz = await this.quizRepository.findOneById(quizId, userLevel);
     if (!quiz) {
       throw new HttpException('Quiz not found', 404);
@@ -89,8 +93,9 @@ export class QuizService {
     return plainToInstance(QuizResponseDto, quiz);
   }
 
-  async getQuizAnswerById(quizId: string) {
-    const quiz = await this.quizRepository.findOneById(quizId, 3);
+  async getQuizAnswerById(quizId: string, userRole: RoleEnum): Promise<string> {
+    const userLevel = getUserLevel(userRole);
+    const quiz = await this.quizRepository.findOneById(quizId, userLevel);
     if (!quiz) {
       throw new HttpException('Quiz not found', 404);
     }
