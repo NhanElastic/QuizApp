@@ -31,6 +31,43 @@
 $ yarn install
 ```
 
+## Environment setup
+
+Place the `.env` file in the root directory of the project.
+
+The `.env` file format is as follows `default.env` file.
+
+
+## Database setup
+
+#### Watch out: You must run exactly same commands in the instructions below.
+
+Must run these commands in the same order at the first time to set up the database.
+
+```bash
+# Create migration file
+$ yarn run database:migration:create ./src/typeorm/migrations/[migration-name]
+
+# Generate migration file
+$ yarn run database:migration:generate ./src/typeorm/migrations/[migration-name]
+
+# Migrate database from migration file
+$ yarn run database:migration:run
+
+```
+
+Additionally, you can run the following commands to revert the database or seed it with initial data.
+
+```bash
+# Revert database
+$ yarn run database:migration:revert
+
+# Watch out: You must run only one of the following commands.
+# Avoid duplicate data in the database.
+$ yarn database:seeding
+
+```
+
 ## Compile and run the project
 
 ```bash
@@ -56,6 +93,9 @@ $ yarn run test:e2e
 # test coverage
 $ yarn run test:cov
 ```
+
+
+
 
 ## Deployment
 
