@@ -62,12 +62,11 @@ export class QuizRepository {
     quiz: QuizEntity,
     newData: UpdateQuizRequestDto,
   ): Promise<QuizEntity> {
-    quiz.title = newData.title == null ? quiz.title : newData.title;
-    quiz.description =
-      newData.description == null ? quiz.description : newData.description;
-    quiz.level = newData.level == null ? quiz.level : newData.level;
-    quiz.question = newData.question == null ? quiz.question : newData.question;
-    quiz.answer = newData.answer == null ? quiz.answer : newData.answer;
+    quiz.title = newData.title ?? quiz.title;
+    quiz.description = newData.description ?? quiz.description;
+    quiz.level = newData.level ?? quiz.level;
+    quiz.question = newData.question ?? quiz.question;
+    quiz.answer = newData.answer ?? quiz.answer;
     return await this.save(quiz);
   }
 }
