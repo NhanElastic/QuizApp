@@ -1,5 +1,5 @@
 import { UnauthorizedException, ExecutionContext } from '@nestjs/common';
-import { JwtService, TokenExpiredError } from '@nestjs/jwt';
+import { TokenExpiredError } from '@nestjs/jwt';
 import { AuthGuard } from './guard.service';
 import { RoleEnum } from '../common/enums/role.enum';
 

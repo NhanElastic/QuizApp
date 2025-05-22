@@ -8,7 +8,6 @@ import {
 } from '@nestjs/common';
 import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { Request } from 'express';
-import { UserRepository } from '../user/user.repository';
 import { RoleEnum } from '../common/enums/role.enum';
 import { UserService } from '../user/user.service';
 
